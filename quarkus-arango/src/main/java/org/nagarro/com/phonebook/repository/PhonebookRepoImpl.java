@@ -10,9 +10,7 @@ import org.nagarro.com.phonebook.model.Person;
 import javax.enterprise.context.ApplicationScoped;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @ApplicationScoped
 public class PhonebookRepoImpl implements PhonebookRepo {
@@ -20,6 +18,7 @@ public class PhonebookRepoImpl implements PhonebookRepo {
     private final static String DB_NAME = "Phonebook";
     private final static String COLLECTION_NAME = "PersonCollection";
     private final static String GET_ALL_QUERY = "FOR p IN PersonCollection RETURN p";
+    private final static String FIND_BY_FIRSTNAME_QUERY = "FOR p IN PersonCollection FILTER p.firstname == @firstname RETURN p";
     private final ArangoDB arangoDB = new ArangoDB.Builder().serializer(new ArangoJack())
             .user("root")
             .password("root")
@@ -27,7 +26,8 @@ public class PhonebookRepoImpl implements PhonebookRepo {
 
     @Override
     public Optional<Person> findByFirstname(String firstname) {
-        return Optional.empty();
+        Person person = createPersonFromDocument(getDocumentByPersonFirstname(firstname));
+        return Optional.of(person);
     }
 
     @Override
@@ -58,13 +58,26 @@ public class PhonebookRepoImpl implements PhonebookRepo {
 
     @Override
     public Person updatePerson(Person person) {
-        BaseDocument baseDocument = createDocumentFromPerson(person);
+        BaseDocument dbDocument = getDocumentByPersonFirstname(person.getFirstname());
+        dbDocument.updateAttribute("lastname", person.getLastname());
+        dbDocument.updateAttribute("phoneNumber", person.getPhoneNumber());
+        dbDocument.updateAttribute("dateOfBirth", person.getDateOfBirth().toString());
+        try {
+            arangoDB.db(DB_NAME).collection(COLLECTION_NAME).updateDocument(dbDocument.getKey(), dbDocument);
+        } catch (ArangoDBException exception) {
+            System.err.println("Failed to update person " + exception.getMessage());
+        }
         return null;
     }
 
     @Override
     public void deletePersonByFirstname(String firstname) {
-
+        BaseDocument dbDocument = getDocumentByPersonFirstname(firstname);
+        try{
+            arangoDB.db(DB_NAME).collection(COLLECTION_NAME).deleteDocument(dbDocument.getKey());
+        } catch (ArangoDBException exception){
+            System.err.println("Failed to delete person " + exception.getMessage());
+        }
     }
 
     private BaseDocument createDocumentFromPerson(Person person) {
@@ -85,5 +98,17 @@ public class PhonebookRepoImpl implements PhonebookRepo {
                 .phoneNumber(baseDocument.getAttribute("phoneNumber").toString())
                 .dateOfBirth(LocalDate.parse(baseDocument.getAttribute("dateOfBirth").toString(), formatter))
                 .build();
+    }
+
+    private BaseDocument getDocumentByPersonFirstname(String firstname) {
+        BaseDocument baseDocument = null;
+        try {
+            Map<String, Object> bindVars = Collections.singletonMap("firstname", firstname);
+            ArangoCursor<BaseDocument> cursor = arangoDB.db(DB_NAME).query(FIND_BY_FIRSTNAME_QUERY, bindVars, BaseDocument.class);
+            baseDocument = cursor.next();
+        } catch (ArangoDBException exception) {
+            System.err.println("Error executing query " + exception.getMessage());
+        }
+        return baseDocument;
     }
 }

@@ -6,6 +6,7 @@ import org.nagarro.com.phonebook.repository.PhonebookRepo;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Optional;
 
 @ApplicationScoped
 public class PhonebookService {
@@ -13,12 +14,26 @@ public class PhonebookService {
     @Inject
     PhonebookRepo phonebookRepo;
 
-    public Person addPerson(Person person) {
-        phonebookRepo.createPerson(person);
-        return person;
+    public Optional<Person> getPersonByFirstname(String firstname) {
+        return phonebookRepo.findByFirstname(firstname);
     }
 
     public List<Person> getAllPersons() {
         return phonebookRepo.getAllPersons();
     }
+
+    public Person addPerson(Person person) {
+        phonebookRepo.createPerson(person);
+        return person;
+    }
+
+    public Person updatePerson(Person person) {
+        phonebookRepo.updatePerson(person);
+        return person;
+    }
+
+    public void deletePerson(String firstname) {
+        phonebookRepo.deletePersonByFirstname(firstname);
+    }
+
 }

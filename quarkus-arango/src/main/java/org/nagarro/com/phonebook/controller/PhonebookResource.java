@@ -15,9 +15,10 @@ public class PhonebookResource {
     PhonebookService phonebookService;
 
     @GET
+    @Path("/{firstname}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String hello() {
-        return "Hello RESTEasy";
+    public Response getByFirstname(@PathParam("firstname") String firstname) {
+        return Response.ok(phonebookService.getPersonByFirstname(firstname)).build();
     }
 
     @POST
@@ -32,5 +33,20 @@ public class PhonebookResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllPersons() {
         return Response.ok(phonebookService.getAllPersons()).build();
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updatePerson(Person person) {
+        return Response.ok(phonebookService.updatePerson(person)).build();
+    }
+
+    @DELETE
+    @Path("/{firstname}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deletePerson(@PathParam("firstname") String firstname) {
+        phonebookService.deletePerson(firstname);
+        return Response.noContent().build();
     }
 }
