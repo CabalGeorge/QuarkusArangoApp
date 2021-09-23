@@ -36,4 +36,8 @@ public class PhonebookService {
         phonebookRepo.deletePersonByFirstname(firstname);
     }
 
+    public List<String> getFullNames() {
+        return phonebookRepo.getPersonsFullName();
+    }
+
 }

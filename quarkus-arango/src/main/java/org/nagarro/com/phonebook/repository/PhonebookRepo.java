@@ -11,6 +11,8 @@ public interface PhonebookRepo {
 
     List<Person> getAllPersons();
 
+    List<String> getPersonsFullName();
+
     Person createPerson(Person person);
 
     Person updatePerson(Person person);

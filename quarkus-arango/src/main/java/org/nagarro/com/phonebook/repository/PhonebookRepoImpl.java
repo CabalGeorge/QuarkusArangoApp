@@ -19,6 +19,8 @@ public class PhonebookRepoImpl implements PhonebookRepo {
     private final static String COLLECTION_NAME = "PersonCollection";
     private final static String GET_ALL_QUERY = "FOR p IN PersonCollection RETURN p";
     private final static String FIND_BY_FIRSTNAME_QUERY = "FOR p IN PersonCollection FILTER p.firstname == @firstname RETURN p";
+    private final static String GET_FULL_NAME_QUERY = "FOR p IN PersonCollection RETURN { [p.type] : { [\"fullname\"] : " +
+            "CONCAT(p.firstname,\" \", p.lastname)} }";
     private final ArangoDB arangoDB = new ArangoDB.Builder().serializer(new ArangoJack())
             .user("root")
             .password("root")
@@ -73,11 +75,27 @@ public class PhonebookRepoImpl implements PhonebookRepo {
     @Override
     public void deletePersonByFirstname(String firstname) {
         BaseDocument dbDocument = getDocumentByPersonFirstname(firstname);
-        try{
+        try {
             arangoDB.db(DB_NAME).collection(COLLECTION_NAME).deleteDocument(dbDocument.getKey());
-        } catch (ArangoDBException exception){
+        } catch (ArangoDBException exception) {
             System.err.println("Failed to delete person " + exception.getMessage());
         }
+    }
+
+    @Override
+    public List<String> getPersonsFullName() {
+        List<String> nameList = new ArrayList<>();
+        try {
+            ArangoCursor<BaseDocument> cursor = arangoDB.db(DB_NAME).query(GET_FULL_NAME_QUERY, BaseDocument.class);
+            cursor.forEachRemaining(baseDocument -> {
+                String value = baseDocument.getProperties().values().toString().substring("[{fullname=".length());
+                String fullName = value.substring(0, value.length() - 2);
+                nameList.add(fullName);
+            });
+        } catch (ArangoDBException exception) {
+            System.err.println("Failed to execute query " + exception.getMessage());
+        }
+        return nameList;
     }
 
     private BaseDocument createDocumentFromPerson(Person person) {

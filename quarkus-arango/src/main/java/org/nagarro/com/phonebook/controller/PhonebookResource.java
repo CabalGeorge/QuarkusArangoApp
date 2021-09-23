@@ -35,6 +35,13 @@ public class PhonebookResource {
         return Response.ok(phonebookService.getAllPersons()).build();
     }
 
+    @GET
+    @Path("/fullnames")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getFullNames() {
+        return Response.ok(phonebookService.getFullNames()).build();
+    }
+
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
