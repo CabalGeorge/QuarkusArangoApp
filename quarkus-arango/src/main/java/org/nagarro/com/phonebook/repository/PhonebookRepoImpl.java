@@ -19,8 +19,8 @@ public class PhonebookRepoImpl implements PhonebookRepo {
     private final static String COLLECTION_NAME = "PersonCollection";
     private final static String GET_ALL_QUERY = "FOR p IN PersonCollection RETURN p";
     private final static String FIND_BY_FIRSTNAME_QUERY = "FOR p IN PersonCollection FILTER p.firstname == @firstname RETURN p";
-    private final static String GET_FULL_NAME_QUERY = "FOR p IN PersonCollection RETURN { [p.type] : { [\"fullname\"] : " +
-            "CONCAT(p.firstname,\" \", p.lastname)} }";
+    private final static String GET_FULL_NAME_QUERY = "FOR p IN PersonCollection RETURN { [\"fullname\"] : " +
+            "CONCAT(p.firstname,\" \", p.lastname)}";
     private final ArangoDB arangoDB = new ArangoDB.Builder().serializer(new ArangoJack())
             .user("root")
             .password("root")
@@ -88,9 +88,7 @@ public class PhonebookRepoImpl implements PhonebookRepo {
         try {
             ArangoCursor<BaseDocument> cursor = arangoDB.db(DB_NAME).query(GET_FULL_NAME_QUERY, BaseDocument.class);
             cursor.forEachRemaining(baseDocument -> {
-                String value = baseDocument.getProperties().values().toString().substring("[{fullname=".length());
-                String fullName = value.substring(0, value.length() - 2);
-                nameList.add(fullName);
+                nameList.add(baseDocument.getAttribute("fullname").toString());
             });
         } catch (ArangoDBException exception) {
             System.err.println("Failed to execute query " + exception.getMessage());
