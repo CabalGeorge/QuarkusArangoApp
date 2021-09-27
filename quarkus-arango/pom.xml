@@ -18,6 +18,7 @@
     <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
     <quarkus.platform.version>1.13.7.Final</quarkus.platform.version>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
+    <ignite.version>2.11.0</ignite.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -57,6 +58,16 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-arc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.ignite</groupId>
+      <artifactId>ignite-core</artifactId>
+      <version>${ignite.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.ignite</groupId>
+      <artifactId>ignite-spring</artifactId>
+      <version>${ignite.version}</version>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>

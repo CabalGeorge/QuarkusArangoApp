@@ -102,6 +102,7 @@ public class PhonebookRepoImpl implements PhonebookRepo {
         document.addAttribute("lastname", person.getLastname());
         document.addAttribute("phoneNumber", person.getPhoneNumber());
         document.addAttribute("dateOfBirth", person.getDateOfBirth().toString());
+        document.addAttribute("city", person.getCity());
 
         return document;
     }
@@ -113,6 +114,7 @@ public class PhonebookRepoImpl implements PhonebookRepo {
                 .lastname(baseDocument.getAttribute("lastname").toString())
                 .phoneNumber(baseDocument.getAttribute("phoneNumber").toString())
                 .dateOfBirth(LocalDate.parse(baseDocument.getAttribute("dateOfBirth").toString(), formatter))
+                .city(baseDocument.getAttribute("city").toString())
                 .build();
     }
 

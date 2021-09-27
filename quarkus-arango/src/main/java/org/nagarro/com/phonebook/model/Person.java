@@ -8,12 +8,14 @@ public class Person {
     private String lastname;
     private String phoneNumber;
     private LocalDate dateOfBirth;
+    private String city;
 
     private Person(PersonBuilder personBuilder) {
         this.firstname = personBuilder.firstname;
         this.lastname = personBuilder.lastname;
         this.phoneNumber = personBuilder.phoneNumber;
         this.dateOfBirth = personBuilder.dateOfBirth;
+        this.city = personBuilder.city;
     }
 
     public Person() {
@@ -51,17 +53,25 @@ public class Person {
         this.dateOfBirth = dateOfBirth;
     }
 
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Person person = (Person) o;
-        return Objects.equals(firstname, person.firstname) && Objects.equals(lastname, person.lastname) && Objects.equals(phoneNumber, person.phoneNumber) && Objects.equals(dateOfBirth, person.dateOfBirth);
+        return Objects.equals(firstname, person.firstname) && Objects.equals(lastname, person.lastname) && Objects.equals(phoneNumber, person.phoneNumber) && Objects.equals(dateOfBirth, person.dateOfBirth) && Objects.equals(city, person.city);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(firstname, lastname, phoneNumber, dateOfBirth);
+        return Objects.hash(firstname, lastname, phoneNumber, dateOfBirth, city);
     }
 
     @Override
@@ -71,6 +81,7 @@ public class Person {
                 ", lastname='" + lastname + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", dateOfBirth=" + dateOfBirth +
+                ", city=" + city +
                 '}';
     }
 
@@ -79,6 +90,7 @@ public class Person {
         private String lastname;
         private String phoneNumber;
         private LocalDate dateOfBirth;
+        private String city;
 
         public PersonBuilder firstname(String firstname) {
             this.firstname = firstname;
@@ -97,6 +109,11 @@ public class Person {
 
         public PersonBuilder dateOfBirth(LocalDate dateOfBirth) {
             this.dateOfBirth = dateOfBirth;
+            return this;
+        }
+
+        public PersonBuilder city(String city) {
+            this.city = city;
             return this;
         }
 
