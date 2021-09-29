@@ -1,5 +1,6 @@
 package org.nagarro.com.phonebook;
 
+import io.quarkus.runtime.StartupEvent;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.IgniteException;
@@ -10,10 +11,15 @@ import org.apache.ignite.resources.IgniteInstanceResource;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.multicast.TcpDiscoveryMulticastIpFinder;
 
+import javax.enterprise.event.Observes;
 import java.util.Collections;
 
 public class HelloWorld {
     public static void main(String[] args) throws IgniteException {
+        runIgnite(null);
+    }
+
+    private static void runIgnite(@Observes StartupEvent event){
         // Preparing IgniteConfiguration using Java APIs
         IgniteConfiguration cfg = new IgniteConfiguration();
 
