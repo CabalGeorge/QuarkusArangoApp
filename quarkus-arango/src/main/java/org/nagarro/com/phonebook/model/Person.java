@@ -1,9 +1,10 @@
 package org.nagarro.com.phonebook.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class Person {
+public class Person implements Serializable {
     private String firstname;
     private String lastname;
     private String phoneNumber;

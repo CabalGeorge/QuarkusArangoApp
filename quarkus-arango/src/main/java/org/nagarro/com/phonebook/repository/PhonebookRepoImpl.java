@@ -5,12 +5,14 @@ import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
 import com.arangodb.entity.BaseDocument;
 import com.arangodb.mapping.ArangoJack;
+import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.CacheAtomicityMode;
 import org.apache.ignite.cache.CacheMode;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
+import org.apache.ignite.resources.IgniteInstanceResource;
 import org.nagarro.com.phonebook.model.Person;
 
 import javax.cache.Cache.Entry;
@@ -34,7 +36,9 @@ public class PhonebookRepoImpl implements PhonebookRepo {
             .password("root")
             .build();
 
-    private final IgniteCache<String, Person> personCache = Ignition.start(new IgniteConfiguration()).createCache("cache");
+    @IgniteInstanceResource
+    private Ignite ignite;
+    private final IgniteCache<String, Person> personCache = ignite.getOrCreateCache(CACHE_NAME);
 
 
     @Override
@@ -133,7 +137,7 @@ public class PhonebookRepoImpl implements PhonebookRepo {
         return document;
     }
 
-    private Person createPersonFromDocument(BaseDocument baseDocument) {
+    public static Person createPersonFromDocument(BaseDocument baseDocument) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return new Person.PersonBuilder()
                 .firstname(baseDocument.getAttribute("firstname").toString())
